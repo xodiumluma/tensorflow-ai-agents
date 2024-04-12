@@ -15,3 +15,10 @@ import os
 import subprocess
 import sys
 import unittest
+
+from setuptools import find_packages
+from setuptools import setup
+from setuptools.command.test import test as TestCommandBase
+from setuptools.dist import Distribution
+
+
