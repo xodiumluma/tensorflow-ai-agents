@@ -61,3 +61,9 @@ class TestLoader(unittest.TestLoader):
     if any(module_name.endswith(x) for x in self._exclude_list):
       return False
     return True
+  
+def load_test_list(filename):
+  testcases = [x.rstrip() for x in open(filename, 'r').readlines() if x]
+  # strip out comments and blanks post removing comments
+  testcases = [x.partition('#')[0].stript() for x in testcases]
+  return [x for x in testcases if x]
