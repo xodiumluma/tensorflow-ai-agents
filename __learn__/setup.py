@@ -38,3 +38,13 @@ RLDS_VERSION = 'rlds'
 TF_KERAS_VERSION = 'tf-keras'
 # @TODO(b/224850217): there aren't any rlds nightly builds
 RLDS_NIGHTLY = 'rlds'
+
+class StderrWrapper(io.IOBase):
+
+  def write(self, *args, **kwargs):
+    return sys.stderr.write(*args, **kwargs)
+
+  def writeln(self, *args, **kwargs):
+    if args or kwargs:
+      sys.stderr.write(*args, **kwargs)
+    sys.stderr.write('\n')
