@@ -73,3 +73,20 @@ class Test(TestCommandBase):
   def run_tests(self):
     # import absl inside run - dependencies have already been loaded
     from absl import app # pylint: disable=g-import-not-at-top
+
+  def main(_):
+    # As pybullet imports multiprocessing in its setup.py file, this
+    # has a problem when our project imports multiprocessing.pool.dummy
+    # further on as the PYTHONPATH has changed
+    for module in [
+      'multiprocessing',
+      'multiprocessing.pool',
+      'multiprocessing.dummy',
+      'multiprocessing.pool.dummy'
+    ]:
+      if module in sys.modules:
+        del sys.modules[module]
+    # To avoid suprious error printouts, reimport multiprocessing
+    # Ref: https://bugs.python.org/issue15881
+    import multiprocessing as _ # pylint: disable=g-import-not-at-top
+    import tensorflow as tf # pylint: disable=g-import-not-at-top
