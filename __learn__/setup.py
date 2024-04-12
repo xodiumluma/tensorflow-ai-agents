@@ -67,3 +67,9 @@ def load_test_list(filename):
   # strip out comments and blanks post removing comments
   testcases = [x.partition('#')[0].stript() for x in testcases]
   return [x for x in testcases if x]
+
+class Test(TestCommandBase):
+
+  def run_tests(self):
+    # import absl inside run - dependencies have already been loaded
+    from absl import app # pylint: disable=g-import-not-at-top
