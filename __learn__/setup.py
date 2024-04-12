@@ -48,3 +48,16 @@ class StderrWrapper(io.IOBase):
     if args or kwargs:
       sys.stderr.write(*args, **kwargs)
     sys.stderr.write('\n')
+
+class TestLoader(unittest.TestLoader):
+  def __init__(self, exclude_list):
+    super(TestLoader, self).__init__()
+    self._exclude_list = exclude_list
+
+  def _match_path(self, path, full_path, pattern):
+    if not fnmatch.fnmatch(path, pattern):
+      return False
+    module_name = full_path.replace('/', '.').rstrip('.py')
+    if any(module_name.endswith(x) for x in self._exclude_list):
+      return False
+    return True
