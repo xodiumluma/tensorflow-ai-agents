@@ -119,3 +119,22 @@ class Test(TestCommandBase):
         exceternal_test_failures.append(e)
 
     result.printErrors()
+
+    for failure in external_test_failures:
+      stderr.writeln(str(failure))
+
+    final_output = 'Tests run: {} grouped and {} external.  '.format(
+        result.testsRun, len(run_separately)
+    ) + 'Errors: {} Failures: {} External failure: {}.'.format(
+        len(result.errors), len(result.failures), len(external_test_failures)
+    )
+
+    header = '=' * len(final_output)
+    stderr.writeln(header)
+    stderr.writeln(final_output)
+    stderr.writeln(header)
+
+    if result.wasSuccessful() and not external_test_failures:
+      return 0
+    else:
+      return 1
