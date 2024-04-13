@@ -108,3 +108,14 @@ class Test(TestCommandBase):
     stderr = StderrWrapper()
     result = unittest.TextTestResult(stderr, descriptions=True, verbosity=2)
     test_suite.run(result)
+
+    external_test_failures = []
+
+    for test in run_separately:
+      filename = 'tf_agents/%s.py' % test.replace('.', '/')
+      try:
+        subprocess.check_call([sys.executable, filename])
+      except subprocess.CalledProcessError as e:
+        exceternal_test_failures.append(e)
+
+    result.printErrors()
