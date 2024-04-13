@@ -90,3 +90,21 @@ class Test(TestCommandBase):
     # Ref: https://bugs.python.org/issue15881
     import multiprocessing as _ # pylint: disable=g-import-not-at-top
     import tensorflow as tf # pylint: disable=g-import-not-at-top
+
+    # All GPUs are allocated 1GB memory 
+    # The main process running most/all of the unit tests allocates all GPU memory as TF allocates all GPU memory during startup
+    # run_separately tests fail with OOM errors as they are spun off as a subprocess of the process hogging the GPU memory
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    for gpu in gpus:
+      tf.config.set_logical_device_configuration(
+          gpu, [tf.config.LogicalDeviceConfiguration(memory_limit=1024)]
+      )
+    
+    run_separately = load_test_list('test_individually.txt')
+    broken_tests = load_test_list(FLAGS.broken_tests)
+
+    test_loader = TestLoader(exclude_list=run_separately + broken_tests)
+    test_suite = test_loader.discover('tf_agents', pattern='*_test.py')
+    stderr = StderrWrapper()
+    result = unittest.TextTestResult(stderr, descriptions=True, verbosity=2)
+    test_suite.run(result)
